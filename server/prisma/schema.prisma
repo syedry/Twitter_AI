@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Agent {
+  id                  String    @id @default(cuid())
+  name                String
+  twitterHandle       String
+  character          String    @default("default")
+  personality         String
+  languageStyle      String
+  tweetsPerDay       Int       @default(5)
+  isActive           Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  twitterAccessToken  String?
+  twitterRefreshToken String?
+  twitterUsername    String?
+  lastTweetAt        DateTime?
+  timezone           String    @default("UTC")
+  postingStartHour   Int       @default(9)
+  postingEndHour     Int       @default(21)
+  post24Hours        Boolean   @default(false)
+  tweetLogs          TweetLog[]
+  styleProfile       AgentStyleProfile?
+}
+
+model TweetLog {
+  id              String   @id @default(cuid())
+  content         String
+  createdAt       DateTime @default(now())
+  status          String   // 'success' or 'failed'
+  error           String?
+  likes           Int?
+  retweets        Int?
+  replies         Int?
+  tweetId         String?  // Twitter's ID for the tweet
+  agent           Agent    @relation(fields: [agentId], references: [id])
+  agentId         String
+}
+
+model ScrapedUser {
+  id            String   @id @default(cuid())
+  twitterHandle String   @unique
+  lastScrapedAt DateTime
+  tweets        Tweet[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Tweet {
+  id            String      @id @default(cuid())
+  tweetId       String      @unique
+  content       String
+  createdAt     DateTime
+  likesCount    Int
+  retweetsCount Int
+  repliesCount  Int
+  scrapedUser   ScrapedUser @relation(fields: [scrapedUserId], references: [id])
+  scrapedUserId String
+}
+
+model AgentStyleProfile {
+  id                String   @id @default(cuid())
+  agentId          String   @unique
+  agent            Agent    @relation(fields: [agentId], references: [id])
+  writingPatterns  Json
+  trainingTweetCount Int     @default(0)
+  lastUpdated      DateTime @default(now())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+} 

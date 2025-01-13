@@ -1,0 +1,42 @@
+Below is an example api call that you can use to scrape tweets from a specific date to another specific date for the user QwQiao. This is
+how we will get the tweets for the twitter agent to train on. The username is the twitter handle of the user you want to scrape tweets from. 
+For the first time, we will scrape 300 tweets from the start date to the end date, where the end date is the current date and the start date is
+exactly 1 year before the end date. This data will be stored in a database in our server. For any future scrapes on the same user, the end date will be the current date and the start date will be 
+the date the last scrape was performed on this user. It is designed this way to save costs and avoid scraping the same data multiple times. 
+
+
+import { ApifyClient } from 'apify-client';
+
+// Initialize the ApifyClient with your Apify API token
+// Replace the '<YOUR_API_TOKEN>' with your token
+const client = new ApifyClient({
+    token: '<YOUR_API_TOKEN>',
+});
+
+// Prepare Actor input
+const input = {
+    "start": "2024-11-21",
+    "end": "2024-12-04",
+    "includeSearchTerms": false,
+    "maxItems": 300,
+    "onlyImage": false,
+    "onlyQuote": false,
+    "onlyTwitterBlue": false,
+    "onlyVerifiedUsers": false,
+    "onlyVideo": false,
+    "sort": "Latest",
+    "twitterHandles": [
+        "QwQiao"
+    ]
+}
+
+// Run the Actor and wait for it to finish
+const run = await client.actor("apidojo/tweet-scraper").call(input);
+
+// Fetch and print Actor results from the run's dataset (if any)
+console.log('Results from dataset');
+console.log(`Check your data here: https://console.apify.com/storage/datasets/${run.defaultDatasetId}`);
+const { items } = await client.dataset(run.defaultDatasetId).listItems();
+items.forEach((item) => {
+    console.dir(item);
+});
