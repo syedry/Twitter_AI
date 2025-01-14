@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { AgentService } from './AgentService';
+import { AgentService } from './AgentService.js';
 import 'dotenv/config';
 
 // Configure Prisma client with connection pooling
