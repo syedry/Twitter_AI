@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { AgentTrainingService } from './AgentTrainingService';
-import { TwitterService } from './TwitterService';
+import { AgentTrainingService } from './AgentTrainingService.js';
+import { TwitterService } from './TwitterService.js';
 import 'dotenv/config';
 
 const prisma = new PrismaClient();
